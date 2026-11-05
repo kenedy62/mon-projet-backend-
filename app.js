@@ -53,7 +53,7 @@ app.use('/api/options', optionRoutes);
 // Servir les images statiques
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-const cors = require('cors');
+
 
 // Autorise votre frontend Vercel à faire des requêtes vers le backend
 
