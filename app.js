@@ -13,7 +13,7 @@ const commentRoutes = require('./routes/comment');
 const dashboardRoutes = require('./routes/dashboard');
 const optionRoutes = require('./routes/option');
 const publicRouter = require('./routes/public');
-const stuffCtrl = require('../controllers/stuff'); // Décommenté car utilisé plus bas
+const stuffCtrl = require('./controllers/Stuff'); // Décommenté car utilisé plus bas
 
 const app = express(); 
 
