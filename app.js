@@ -22,10 +22,15 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch((err) => console.log('Connexion à MongoDB échouée !', err));
 
-  app.use(cors({
-  origin: 'https://vercel.app', 
+// Option A : Autoriser votre domaine Vercel précis (Plus sécurisé)
+app.use(cors({
+  origin: 'https://mon-projet-frontend-psi.vercel.app',
   credentials: true
 }));
+
+// Option B : Tout autoriser temporairement pour valider le fonctionnement
+// app.use(cors());
+
 
 // Middlewares globaux
 app.use(cors()); // Gère proprement les accès Cross-Origin pour votre Vue app
