@@ -23,10 +23,25 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.log('Connexion à MongoDB échouée !', err));
 
 // Option A : Autoriser votre domaine Vercel précis (Plus sécurisé)
+
+// 🎯 Configure an array of accepted production origins
+const allowedOrigins = [
+  'https://mon-projet-frontend-psi.vercel.app',
+  'https://mon-projet-frontend-peach.vercel.app'
+];
+
 app.use(cors({
-  origin: 'https://mon-projet-frontend-psi.vercel.app',
+  origin: function (origin, callback) {
+    // Allows local tests and explicitly configured Vercel deployment links
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Blocked by CORS platform protection policy'));
+    }
+  },
   credentials: true
 }));
+
 
 // Option B : Tout autoriser temporairement pour valider le fonctionnement
 // app.use(cors());
