@@ -51,11 +51,16 @@ exports.createThing = (req, res, next) => {
     if (thingObject.price) thingObject.price = Number(thingObject.price);
     delete thingObject._id;
 
-    const thing = new Thing({
-        ...thingObject,
-        userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    });
+    // const thing = new Thing({
+    //     ...thingObject,
+    //     userId: req.auth.userId,
+    //     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    // });
+
+   const thing = new Thing({
+  ...thingObject,
+  imageUrl: req.file ? req.file.path : '' // Utilise directement le lien renvoyé par Cloudinary
+});
 
     thing.save()
         .then(() => res.status(201).json({ message: 'Objet enregistré avec succès !' }))
@@ -96,9 +101,15 @@ exports.modifyThing = (req, res, next) => {
     if (thingObject.commentCount === undefined || thingObject.commentCount === 'undefined') delete thingObject.commentCount;
 
     // 5. Gestion de l'image optionnelle
+
+    //  Nouveau code (Cloudinary) :
     if (req.file) {
-        thingObject.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+        thingObject.imageUrl = req.file.path;
     }
+
+    // if (req.file) {
+    //     thingObject.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+    // }
 
     // 🎯 6. ETAPE CLÉ : On va chercher les commentaires AVANT de sauvegarder le produit
     Comment.find({ productId: req.params.id, status: 'approved' })
