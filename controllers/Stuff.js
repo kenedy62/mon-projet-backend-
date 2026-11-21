@@ -126,7 +126,7 @@ exports.modifyThing = (req, res, next) => {
             console.log("Objet final envoyé à MongoDB :", thingObject);
 
             // 🎯 7. UN SEUL APPEL À MONGO DB AVEC L'OPÉRATEUR $set
-            Thing.updateOne({ _id: req.params._id }, { $set: thingObject })
+            Thing.updateOne({ _id: req.params.id }, { $set: thingObject })
                 .then((result) => {
                     console.log("Résultat brut de la mise à jour MongoDB :", result);
                     
