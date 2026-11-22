@@ -12,7 +12,7 @@ router.get('/stats', auth, stuffCtrl.getDashboardStats);
 router.get('/:id', tracker, stuffCtrl.getOneThing);
 
 router.post('/', auth, multer, stuffCtrl.createThing); 
-router.put('/:_id', auth, multer, stuffCtrl.modifyThing);
+router.put('/:id', auth, multer, stuffCtrl.modifyThing);
 router.delete('/:id', auth, stuffCtrl.deleteThing);
 
 module.exports = router;
