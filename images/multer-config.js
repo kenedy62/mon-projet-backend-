@@ -5,9 +5,9 @@ const multer = require('multer');
 
 // Configuration avec vos clés Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_Root,
-  api_key: process.env.CLOUDINARY_API_855362635721481,
-  api_secret: process.env.CLOUDINARY_API_0PML8vXLvyowgl2dhwHaZiJVlcl
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 // Création du dossier de stockage permanent dans le cloud
