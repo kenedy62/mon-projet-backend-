@@ -2,6 +2,7 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 
+
 // Configuration avec vos clés Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_Root,
@@ -18,7 +19,8 @@ const storage = new CloudinaryStorage({
   }
 });
 
-module.exports = multer({ storage: storage });
+module.exports = multer({ storage: storage }).single('image');
+
 
 // const multer =require('multer'); 
 // const MIME_TYPES ={

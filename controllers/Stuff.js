@@ -2,6 +2,7 @@ const Thing = require('../models/thing');
 const fs = require('fs')
 const Comment = require('../models/comment');
 const Visit = require('../models/visit');
+const cloudinary = require('cloudinary').v2;
 // creation d'un nouveau objet
 exports.createThing = (req, res, next) => {
     let thingObject = { ...req.body };
@@ -66,6 +67,7 @@ exports.createThing = (req, res, next) => {
         .then(() => res.status(201).json({ message: 'Objet enregistré avec succès !' }))
         .catch(error => res.status(400).json({ error: error.message }));
 };
+
 
 
 // selectioner un objet 
@@ -195,40 +197,47 @@ exports.modifyThing = (req, res, next) => {
 
  // 💡 IMPORTATION : Ajoutez le modèle Comment
 
+
+
 exports.deleteThing = (req, res, next) => {
-    // 1. On cherche le produit pour obtenir son image
     Thing.findOne({ _id: req.params.id })
         .then(thing => {
             if (!thing) {
                 return res.status(404).json({ error: "Produit non trouvé !" });
             }
 
-            const filename = thing.imageUrl.split('/images/')[1];
-
-            // 2. On supprime le fichier physique du disque
-            fs.unlink(`images/${filename}`, (err) => {
-                if (err) {
-                    console.error("Impossible de supprimer l'image physique :", err.message);
+            // Suppression de l'image sur Cloudinary si une image existe
+            const deleteImagePromise = () => {
+                if (!thing.imageUrl || !thing.imageUrl.includes('cloudinary.com')) {
+                    return Promise.resolve();
                 }
 
-                // 3. On supprime le produit de la collection 'Things'
+                // Extrait "chermical-produits/nom_du_fichier" depuis l'URL Cloudinary
+                const parts = thing.imageUrl.split('/');
+                const folderAndFile = parts.slice(-2).join('/'); // ex: chermical-produits/abc123.jpg
+                const publicId = folderAndFile.replace(/\.[^/.]+$/, ""); // enlève l'extension (.jpg, .png...)
+
+                return cloudinary.uploader.destroy(publicId)
+                    .catch(err => console.error("Erreur suppression image Cloudinary :", err.message));
+            };
+
+            deleteImagePromise().then(() => {
+                // Suppression du produit dans MongoDB
                 Thing.deleteOne({ _id: req.params.id })
                     .then(() => {
-                        
-                        // 🎯 4. NOUVEAU : On supprime tous les commentaires liés à ce productId
+                        // Suppression des commentaires associés
                         Comment.deleteMany({ productId: req.params.id })
                             .then(() => {
-                                console.log(`Commentaires liés au produit ${req.params.id} supprimés.`);
-                                res.status(200).json({ message: 'Produit et ses commentaires supprimés avec succès !' });
+                                res.status(200).json({ message: 'Produit, image et commentaires supprimés avec succès !' });
                             })
-                            .catch(error => res.status(500).json({ error: "Erreur suppression commentaires: " + error.message }));
-                            
+                            .catch(error => res.status(500).json({ error: "Erreur suppression commentaires : " + error.message }));
                     })
                     .catch(error => res.status(400).json({ error: error.message }));
             });
         })
         .catch(error => res.status(500).json({ error: error.message }));
 };
+
 
 
 
