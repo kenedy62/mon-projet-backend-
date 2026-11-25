@@ -92,8 +92,15 @@ exports.modifyThing = (req, res, next) => {
     let thingObject = { ...req.body };
 
     // 2. Reconvertir les chaînes JSON en vrais tableaux JavaScript (si présents)
-    if (thingObject.ingredient) thingObject.ingredient = JSON.parse(thingObject.ingredient);
-    if (thingObject.bienfaits) thingObject.bienfaits = JSON.parse(thingObject.bienfaits);
+   const parseSafeArray = (val) => {
+    if (!val) return [];
+    if (Array.isArray(val)) return val;
+    try { return JSON.parse(val); } catch (e) { return val.split(',').map(s => s.trim()).filter(Boolean); }
+};
+
+if (thingObject.ingredient !== undefined) thingObject.ingredient = parseSafeArray(thingObject.ingredient);
+if (thingObject.bienfaits !== undefined) thingObject.bienfaits = parseSafeArray(thingObject.bienfaits);
+
     
     // 3. Conversion sécurisée du prix
     if (thingObject.price) thingObject.price = Number(thingObject.price);
