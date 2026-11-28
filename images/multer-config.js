@@ -1,25 +1,12 @@
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 
+// Stockage temporaire en mémoire (nécessaire pour envoyer le buffer à ImageKit)
+const storage = multer.memoryStorage();
 
-// Configuration avec vos clés Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
-
-// Création du dossier de stockage permanent dans le cloud
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'chermical-produits',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'webp']
-  }
-});
-
-module.exports = multer({ storage: storage }).single('imageUrl');
+module.exports = multer({ 
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 } // Limite à 10 Mo
+}).single('imageUrl');
 
 
 
